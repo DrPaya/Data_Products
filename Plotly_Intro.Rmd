@@ -1,0 +1,48 @@
+---
+title: "Introduction to Plotly"
+output:
+  html_document:
+    df_print: paged 
+---
+
+Web application for creating and ssharing data visualizations. Can work with many different languages. 
+
+```{r}
+library(plotly)
+plot_ly(mtcars, x = ~wt, y = ~mpg, type = "scatter")
+
+
+##Adding colors
+plot_ly(mtcars, x = ~wt, y = ~mpg, type = "scatter", color = ~factor(cyl))
+
+##Different example
+plot_ly(mtcars, x = ~wt, y = ~mpg, type = "scatter", color = ~disp)
+
+##Changing the sizing of scatter as a factor of one of the variables
+plot_ly(mtcars, x = ~wt, y = ~mpg, type = "scatter", 
+        color = ~factor(cyl), size = ~hp)
+
+##Example of 3D scatter plot
+set.seed(2016-07-21)
+temp <- rnorm(100, mean = 30, sd = 5)
+pressue <- rnorm(100)
+dtime <- 1:100
+plot_ly(x = ~temp, y = ~pressue, z = ~dtime,
+        type = "scatter3d", color = ~temp)
+
+##Example of line graph, whic his the default
+data("airmiles")
+plot_ly(x = ~time(airmiles), y = ~airmiles, type = "scatter", mode = "lines")
+
+##Multi Line graph
+library(plotly)
+library(tidyr)
+library(dplyr)
+data("EuStockMarkets")
+
+stocks <- as.data.frame(EuStockMarkets) %>%
+  gather(index, price) %>%
+  mutate(time = rep(time(EuStockMarkets), 4))
+plot_ly(stocks, x = ~time, y = ~price, color = ~index, type = "scatter", mode = "lines")
+```
+
