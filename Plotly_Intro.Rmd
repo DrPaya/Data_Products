@@ -40,9 +40,58 @@ library(tidyr)
 library(dplyr)
 data("EuStockMarkets")
 
-stocks <- as.data.frame(EuStockMarkets) %>%
-  gather(index, price) %>%
-  mutate(time = rep(time(EuStockMarkets), 4))
-plot_ly(stocks, x = ~time, y = ~price, color = ~index, type = "scatter", mode = "lines")
+stocks <- as.data.frame(EuStockMarkets) %>%  ##converting it into a data.frame, then 'passing' into "gather" command. 
+  gather(National_index, price) %>%  ## conversion between the short format of data, into long format. Head the data to see the difference. index is the title of what used to be the column headers, and price is the independant variable populated in each column. Turns long-form. 
+  mutate(time = rep(time(EuStockMarkets), 4))  ##creates the time variable
+plot_ly(stocks, x = ~time, y = ~price, color = ~National_index, type = "scatter", mode = "lines")
+
+## Plotting a histogram
+plot_ly(x = ~precip, type = "histogram")  ##just need a single x variable
+
+## Boxplots need a single y variable, and color comes from species variable from data.frame
+plot_ly(iris, y = ~Petal.Length, color = ~Species, type = "box")
+
+##Forming a Heat Map
+terrain1 <- matrix(rnorm(100*100), nrow = 100, ncol = 100)  ## generating a random matrix of 100 by 100
+plot_ly(z = ~terrain1, type = "heatmap")
+
+##Forming a 3D Surface
+terrain2 <- matrix(sort(rnorm(100*100)), nrow = 100, ncol = 100)
+plot_ly(z = ~terrain2, type = "surface")  ##can also be thought of as a surgace heat map
+
+
+##Choropleth maps setup
+# Create data frame
+state_pop <- data.frame(State = state.abb, Pop = as.vector(state.x77[,1]))
+# Create hover text
+state_pop$hover <- with(state_pop, paste(State, '<br>', "Population:", Pop))   ## here, you have the state abreviation, a line break <br>, the word population, and then the population numbers.
+# Make state borders white
+borders <- list(color = toRGB("black"))  ##makes the borders a color
+# Set up some mapping options
+map_options <- list( 
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
+
+##Mapping it
+plot_ly(z = ~state_pop$Pop, text = ~state_pop$hover, locations = ~state_pop$State, 
+        type = 'choropleth', locationmode = 'USA-states', 
+        color = state_pop$Pop, colors = 'Blues', marker = list(line = borders)) %>%
+  layout(title = 'US Population in 1975', geo = map_options)
+```
+
+### GGPlotly- making any ggplot interactive
+```{r}
+set.seed(100)
+d <- diamonds[sample(nrow(diamonds),1000), ]
+
+p <- ggplot(data = d, aes(x = carat, y = price)) +
+  geom_point(aes(text = paste("Clarity:", clarity)), size = 4) +
+  geom_smooth(aes(color = cut, fill = cut)) +
+  facet_wrap(~ cut)
+
+(gg <- ggplotly(p))  ##how to make any ggplot interactive using plotly.
 ```
 
