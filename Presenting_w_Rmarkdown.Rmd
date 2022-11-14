@@ -1,0 +1,74 @@
+---
+title: "Presenting Using R_Markdown"
+author: "Alex P"
+date: "2022-11-14"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Two pound signs are what create a new slide (with title)
+Some content here- this is plain text
+
+*this is italicized text*
+
+**this is bold text**
+
+
+
+*** 
+### This is a top level subheading
+#### Second level subheading
+
+
+This is a new slide without a title
+
+
+
+## R Markdown
+
+This is an R Markdown presentation. 
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+
+## Slide with Bullets
+
+- Things we wish to consider are the following:
+  - version controlling a presentation
+  - Reproducibility
+  - Ability to share across platforms (i.e. everyone has a web browser)
+  - Ease of creating
+  
+  1. item 1 for ordered list
+  2. item 2 for ordered list
+
+## Summarizing the Diamond dataset
+
+```{r cars, echo = FALSE, comment=""}
+## above, the comment = "" blank takes away the first "column" from the data.frame
+library(ggplot2)
+d1 <-diamonds[ ,1:4]
+head(d1)
+summary(d1)
+```
+
+## Diamond data using Plotly
+
+```{r byFormat, echo = FALSE, message=FALSE, warning= FALSE, fig.width= 7, fig.height=5}
+library(plotly)
+library(ggplot2)
+set.seed(100)
+d <- diamonds[sample(nrow(diamonds),1000), ]
+
+p <- ggplot(data = d, aes(x = carat, y = price)) +
+  geom_point(aes(text = paste("Clarity:", clarity)), size = 4) +
+  geom_smooth(aes(color = cut, fill = cut)) +
+  facet_wrap(~ cut)
+  
+
+(gg <- ggplotly(p))  ##how to make any ggplot interactive using plotly.
+
+```
+
