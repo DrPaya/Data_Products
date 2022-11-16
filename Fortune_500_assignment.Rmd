@@ -1,0 +1,53 @@
+---
+title: "Week 2 ASsignment- Fortune 500"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Week 2 Assignment- Fortune 500 Companies
+
+## Dataset and Context
+
+The data used in this presentation/website can be found here: https://hifld-geoplatform.opendata.arcgis.com/datasets/fortune-500-corporate-headquarters/explore?location=41.765007%2C-113.147529%2C3.79
+
+This data is part of Homeland Infrastructure Foundation-Level Data (HIFLD), and it is free to access in a number for formats.
+
+The dataset represents demographic information on the Fortune 500 list of companies from 2017. This data includes revenue, location, profit, and more, which are all available give that they are publicly traded. 
+
+I have chosen to map: 
+
+1.) the location of each headquarters (HQ) of each company
+
+2.) created a "circle" in purple which represents the amount of profit each company generated per employee within that company. For instance, technology companies have a higher return in terms of profit per headcount, compared to a company like walmart, which is a massive retail outlet employing 2+ million people. 
+
+3.) Dropdowns that include information such as the businesses name, their revenue, number of employees, and their profit in 2017
+
+I hope you enjoy playing a bit with this map. It was a lot of fun to create. 
+
+### Today's date: 11/15/2022
+
+## The Map:
+
+```{r}
+f500 <- read.csv("./data/Fortune_500.csv") ##reading in data.frame
+
+f500$PROFIT_PER_EMPLOYEE <- (f500$PROFIT*1000000)/f500$EMPLOYEES
+#f500 <- f500[,c(6,7,9,10,11,12,13,14,15,16,25)] ##subsetting important info only
+head(f500, n=10)
+
+library(leaflet)
+library(leaflet.opacity)
+f500 %>%
+  leaflet() %>%
+  addTiles() %>%
+  addCircles(weight = 2, color = "purple", fill = FALSE, opacity = .5, radius = sqrt(f500$PROFIT_PER_EMPLOYEE)*3 ) %>%
+  addMarkers(clusterOptions = markerClusterOptions(), popup = paste("Name:", f500$NAME, "<br>",
+                                                                    "# Employees:", f500$EMPLOYEES, "<br>",
+                                                                    "Revenue (mil):", f500$REVENUES, "<br>",
+                                                                    "Profit (mil):", f500$PROFIT))
+  
+  
+  
+  
+```
