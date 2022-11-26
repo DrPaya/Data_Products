@@ -1,0 +1,104 @@
+---
+title: "Using Leaflet"
+output:
+  html_document:
+    df_print: paged
+---
+
+## Using Leaflet for map generation
+```{r}
+library(leaflet)
+my_map <- leaflet() %>% ##piping notation simply adds additional functions/arguments to my_map output. Helps reduce time
+  addTiles()  ##adds first set of content
+my_map
+```
+
+
+## Adding markers to a map
+```{r}
+library(leaflet)
+my_map <- my_map %>%
+  addMarkers(lat=39.2980803, lng=-76.5898801, 
+             popup="Jeff Leek's Office")
+my_map
+```
+
+## Adding multiple markers
+
+Adding one marker at a time is often not practical if you
+want to display many markers. If you have a data frame with
+columns `lat` and `lng` you can pipe that data frame into
+`leaflet()` to add all the points at once.
+```{r}
+set.seed(2016-04-25)
+df <- data.frame(lat = runif(20, min = 39.2, max = 39.3), ## here we could import read.csv any file that has this info
+                 lng = runif(20, min = -76.6, max = -76.5))
+df %>% 
+  leaflet() %>%
+  addTiles() %>%
+  addMarkers()
+```
+
+## Making custom markers for your map
+
+The blue markers that leaflet comes packaged with may not be
+enough depending on what you're mapping. Thankfully you can
+make your own markers from `.png` files.
+```{r}
+hopkinsIcon <- makeIcon(
+  iconUrl = "http://brand.jhu.edu/content/uploads/2014/06/university.shield.small_.blue_.png",
+  iconWidth = 31*215/230, iconHeight = 31,
+  iconAnchorX = 31*215/230/2, iconAnchorY = 16
+)
+hopkinsLatLong <- data.frame(
+  lat = c(39.2973166, 39.3288851, 39.2906617),
+  lng = c(-76.5929798, -76.6206598, -76.5469683))
+hopkinsLatLong %>% 
+  leaflet() %>%
+  addTiles() %>%
+  addMarkers(icon = hopkinsIcon)
+```
+
+## Mapping clusters of markers
+
+Sometimes you might have so many points on a map that it
+doesn't make sense to plot every marker. In these situations
+leaflet allows you to plot clusters of markers using
+`addMarkers(clusterOptions = markerClusterOptions())`. When
+you zoom in to each cluster, the clusters will separate until
+you can see the individual markers.
+```{r}
+df <- data.frame(lat = runif(500, min = 39.25, max = 39.35),
+                 lng = runif(500, min = -76.65, max = -76.55))
+df %>% 
+  leaflet() %>%
+  addTiles() %>%
+  addMarkers(clusterOptions = markerClusterOptions())
+```
+
+## Mapping circle markers
+```{r}
+df <- data.frame(lat = runif(20, min = 39.25, max = 39.35),
+                 lng = runif(20, min = -76.65, max = -76.55))
+df %>% 
+  leaflet() %>%
+  addTiles() %>%
+  addCircleMarkers()
+  
+
+```
+
+## Drawing circles that change based on variable input
+```{r}
+md_cities <- data.frame(name = c("Baltimore", "Frederick", "Rockville", "Gaithersburg", 
+                                 "Bowie", "Hagerstown", "Annapolis", "College Park", "Salisbury", "Laurel"),
+                        pop = c(619493, 66169, 62334, 61045, 55232,
+                                39890, 38880, 30587, 30484, 25346),
+                        lat = c(39.2920592, 39.4143921, 39.0840, 39.1434, 39.0068, 39.6418, 38.9784, 38.9897, 38.3607, 39.0993),
+                        lng = c(-76.6077852, -77.4204875, -77.1528, -77.2014, -76.7791, -77.7200, -76.4922, -76.9378, -75.5994, -76.8483))
+md_cities %>%
+  leaflet() %>%
+  addTiles() %>%
+  addCircles(weight = 1, radius = sqrt(md_cities$pop) * 30)
+```
+
